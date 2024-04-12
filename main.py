@@ -4,25 +4,26 @@ from abc import ABC, abstractmethod
 # Builder Abstract Base Class
 class Builder(ABC):
     @abstractmethod
-    def build_part(self, content, **kwargs):
+    def build_part(self, **kwargs):
         pass
 
 # Concrete Builders
 class SectionBuilder(Builder):
-    def build_part(self, content, **kwargs):
+    def build_part(self, **kwargs):
+        content = kwargs['content']
         return f"\\section*{{{content}}}\n"
 
 class TextBuilder(Builder):
-    def build_part(self, content, **kwargs):
+    def build_part(self, **kwargs):
+        content = kwargs['content']
         return f"{content}\n"
 
 class TextInputBuilder(Builder):
-    def build_part(self, content, **kwargs):
+    def build_part(self, **kwargs):
         lines = kwargs.get('number_of_lines', 10)
-        # Convert cm to mm for spacing
-        spacing_cm = kwargs.get('spacing_cm', 0.8)  # Default 0.8cm which is 8mm
-        spacing_mm = f"{spacing_cm * 10}mm"  # Convert cm to mm
-        return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing_mm}}} % {content}\n}}\n"
+        spacing = kwargs.get('spacing', 3.0)  # Default changed to 3.0
+        spacing_mm = f"{spacing * 10}mm"  # Convert cm to mm
+        return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing_mm}}}\n}}\n"
 
 # Director Class
 class Director:
@@ -49,13 +50,13 @@ class Director:
         self.script += header
 
     def add_section(self, title):
-        self.script += self.builders['section'].build_part(title)
+        self.script += self.builders['section'].build_part(content=title)
 
     def add_text(self, text):
-        self.script += self.builders['text'].build_part(text)
+        self.script += self.builders['text'].build_part(content=text)
 
-    def draw_lines(self, content, number_of_lines, spacing_cm=0.8, openup='0.8cm'):
-        self.script += self.builders['text_input'].build_part(content, number_of_lines=number_of_lines, spacing_cm=spacing_cm, openup=openup)
+    def draw_lines(self, number_of_lines, spacing=3.0, openup='0.8cm'):
+        self.script += self.builders['text_input'].build_part(number_of_lines=number_of_lines, spacing=spacing, openup=openup)
 
     def finalize_document(self):
         self.script += "\\end{document}\n"
@@ -73,13 +74,13 @@ if __name__ == '__main__':
     director.add_text("This section contains the first part of regular computer text.")
 
     director.add_section("Handwriting Section 1")
-    director.draw_lines("15 lines with 8mm spacing", 15, spacing_cm=0.8)
+    director.draw_lines(15, spacing=0.3)
 
     director.add_section("Computer Text Section 2")
     director.add_text("This section contains the second part of regular computer text.")
 
     director.add_section("Handwriting Section 2")
-    director.draw_lines("20 lines with 8mm spacing", 20, spacing_cm=0.8)
+    director.draw_lines(20, spacing=0.3)
 
     # Finalizing document
     director.finalize_document()
