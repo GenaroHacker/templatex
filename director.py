@@ -55,7 +55,7 @@ class Director:
     def add_text(self, text):
         self.script += self.builders['text'].build_part(content=text)
 
-    def draw_lines(self, number_of_lines, spacing=3.0, openup='0.8cm'):
+    def draw_lines(self, number_of_lines, spacing=0.3, openup='0.8cm'):
         self.script += self.builders['text_input'].build_part(number_of_lines=number_of_lines, spacing=spacing, openup=openup)
 
     def finalize_document(self):
@@ -74,13 +74,13 @@ if __name__ == '__main__':
     director.add_text("This section contains the first part of regular computer text.")
 
     director.add_section("Handwriting Section 1")
-    director.draw_lines(15, spacing=0.3)
+    director.draw_lines(15)
 
     director.add_section("Computer Text Section 2")
     director.add_text("This section contains the second part of regular computer text.")
 
     director.add_section("Handwriting Section 2")
-    director.draw_lines(20, spacing=0.3)
+    director.draw_lines(20)
 
     # Finalizing document
     director.finalize_document()
