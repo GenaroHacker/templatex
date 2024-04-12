@@ -16,7 +16,8 @@ class SectionBuilder(Builder):
 class TextBuilder(Builder):
     def build_part(self, **kwargs):
         content = kwargs['content']
-        return f"{content}\n"
+        # Appending the LaTeX command for a new line
+        return f"{content}\\\\\n"
 
 class TextInputBuilder(Builder):
     def build_part(self, **kwargs):
