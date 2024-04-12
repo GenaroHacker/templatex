@@ -1,5 +1,3 @@
-# Implementing the Builder design pattern to generate a LaTeX document as specified
-
 # Importing necessary Python libraries
 from abc import ABC, abstractmethod
 
@@ -21,13 +19,20 @@ class TextBuilder(Builder):
 class TextInputBuilder(Builder):
     def build_part(self, content, **kwargs):
         lines = kwargs.get('number_of_lines', 10)
-        spacing = kwargs.get('spacing_mm', '8mm')
-        return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing}}} % {content}\n}}\n"
+        # Convert cm to mm for spacing
+        spacing_cm = kwargs.get('spacing_cm', 0.8)  # Default 0.8cm which is 8mm
+        spacing_mm = f"{spacing_cm * 10}mm"  # Convert cm to mm
+        return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing_mm}}} % {content}\n}}\n"
 
 # Director Class
 class Director:
     def __init__(self):
         self.script = ""
+        self.builders = {
+            'section': SectionBuilder(),
+            'text': TextBuilder(),
+            'text_input': TextInputBuilder()
+        }
         self.setup_document()
 
     def setup_document(self):
@@ -43,43 +48,41 @@ class Director:
         )
         self.script += header
 
-    def add_section(self, builder, title):
-        self.script += builder.build_part(title)
+    def add_section(self, title):
+        self.script += self.builders['section'].build_part(title)
 
-    def add_text(self, builder, text):
-        self.script += builder.build_part(text)
+    def add_text(self, text):
+        self.script += self.builders['text'].build_part(text)
 
-    def draw_lines(self, builder, content, number_of_lines, spacing_mm='8mm', openup='0.8cm'):
-        self.script += builder.build_part(content, number_of_lines=number_of_lines, spacing_mm=spacing_mm, openup=openup)
+    def draw_lines(self, content, number_of_lines, spacing_cm=0.8, openup='0.8cm'):
+        self.script += self.builders['text_input'].build_part(content, number_of_lines=number_of_lines, spacing_cm=spacing_cm, openup=openup)
 
     def finalize_document(self):
         self.script += "\\end{document}\n"
 
-# Initializing director and builders
-director = Director()
-section_builder = SectionBuilder()
-text_builder = TextBuilder()
-text_input_builder = TextInputBuilder()
+    def write_to_file(self, filename):
+        with open(filename, 'w') as file:
+            file.write(self.script)
 
-# Building the document
-director.add_section(section_builder, "Computer Text Section 1")
-director.add_text(text_builder, "This section contains the first part of regular computer text.")
+if __name__ == '__main__':
+    # Initializing director
+    director = Director()
 
-director.add_section(section_builder, "Handwriting Section 1")
-director.draw_lines(text_input_builder, "15 lines with 8mm spacing", 15, '8mm')
+    # Building the document
+    director.add_section("Computer Text Section 1")
+    director.add_text("This section contains the first part of regular computer text.")
 
-director.add_section(section_builder, "Computer Text Section 2")
-director.add_text(text_builder, "This section contains the second part of regular computer text.")
+    director.add_section("Handwriting Section 1")
+    director.draw_lines("15 lines with 8mm spacing", 15, spacing_cm=0.8)
 
-director.add_section(section_builder, "Handwriting Section 2")
-director.draw_lines(text_input_builder, "20 lines with 8mm spacing", 20, '8mm')
+    director.add_section("Computer Text Section 2")
+    director.add_text("This section contains the second part of regular computer text.")
 
-# Finalizing document
-director.finalize_document()
+    director.add_section("Handwriting Section 2")
+    director.draw_lines("20 lines with 8mm spacing", 20, spacing_cm=0.8)
 
-# Saving the document to a .tex file
-with open('/mnt/data/output.tex', 'w') as file:
-    file.write(director.script)
+    # Finalizing document
+    director.finalize_document()
 
-# Output the script for verification
-director.script
+    # Saving the document to a .tex file
+    director.write_to_file('output.tex')
