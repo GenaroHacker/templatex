@@ -15,4 +15,4 @@ Start using Templatex directly in your browser using Google Colab:
 
 After running the script, download the file `output.tex` from the notebook and run `pdflatex output.tex` on your local machine to generate the document. Note that you must have LaTeX installed on your system to execute this command.
 
-For an example of the expected output, you can click on [example.pdf](https://github.com/GenaroHacker/templatex/blob/main/examples/example.pdf).
+For an expected output example click on [example.pdf](https://github.com/GenaroHacker/templatex/blob/main/examples/example.pdf).
