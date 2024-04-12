@@ -56,7 +56,7 @@ class Director:
         self.script += self.builders['text'].build_part(content=text)
 
     def draw_lines(self, number_of_lines, spacing=0.29, openup='0.8cm'):
-        self.script += self.builders['text_input'].build_part(number_of_lines=number_of_lines, spacing=spacing, openup=openup)
+        self.script += self.builders['text_input'].build_part(number_of_lines=number_of_lines+1, spacing=spacing, openup=openup)
 
     def finalize_document(self):
         self.script += "\\end{document}\n"
