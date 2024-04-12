@@ -25,6 +25,15 @@ class TextInputBuilder(Builder):
         spacing_mm = f"{spacing * 10}mm"
         return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing_mm}}}\n}}\n"
 
+class CheckboxBuilder(Builder):
+    def build_part(self, **kwargs):
+        items = kwargs.get('items', [])
+        checkboxes = "\\begin{itemize}\n"
+        for item in items:
+            checkboxes += f"  \\item[$\\Box$] {item}\n"
+        checkboxes += "\\end{itemize}\n"
+        return checkboxes
+
 # Director Class
 class Director:
     def __init__(self):
@@ -32,7 +41,8 @@ class Director:
         self.builders = {
             'section': SectionBuilder(),
             'text': TextBuilder(),
-            'text_input': TextInputBuilder()
+            'text_input': TextInputBuilder(),
+            'checkbox': CheckboxBuilder()
         }
         self.setup_document()
 
@@ -41,10 +51,12 @@ class Director:
             "\\documentclass[12pt]{article}\n"
             "\\usepackage[a4paper, total={4in, 6in}, margin=0.5in]{geometry}\n"
             "\\usepackage{forloop}\n"
+            "\\usepackage{amssymb}\n"  # Include the amssymb package for the checkbox symbol
             "\\newcounter{ct}\n"
             "\\newcommand{\\lines}[2]{% #1: number of lines, #2: spacing between lines\n"
             "  \\forloop{ct}{1}{\\value{ct} < #1}{\\noindent\\rule{\\linewidth}{0.4pt}\\\\[#2]}\n"
             "}\n"
+            "\\pagestyle{empty}\n"  # Add this line to remove page numbers
             "\\begin{document}\n"
         )
         self.script += header
@@ -58,6 +70,12 @@ class Director:
     def draw_lines(self, number_of_lines, spacing=0.29, openup='0.8cm'):
         self.script += self.builders['text_input'].build_part(number_of_lines=number_of_lines+1, spacing=spacing, openup=openup)
 
+    def add_checkboxes(self, items):
+        self.script += self.builders['checkbox'].build_part(items=items)
+
+    def new_page(self):
+        self.script += "\\newpage\n"  # Adds a new page in the document
+
     def finalize_document(self):
         self.script += "\\end{document}\n"
 
@@ -67,23 +85,28 @@ class Director:
 
 if __name__ == '__main__':
     # Initializing director
-    director = Director()
+    d = Director()
 
     # Building the document
-    director.add_section("Computer Text Section 1")
-    director.add_text("This section contains the first part of regular computer text.")
+    d.add_section("Computer Text Section 1")
+    d.add_text("This section contains the first part of regular computer text.")
 
-    director.add_section("Handwriting Section 1")
-    director.draw_lines(15)
+    d.add_section("Handwriting Section 1")
+    d.draw_lines(15)
 
-    director.add_section("Computer Text Section 2")
-    director.add_text("This section contains the second part of regular computer text.")
+    d.add_section("Computer Text Section 2")
+    d.add_text("This section contains the second part of regular computer text.")
 
-    director.add_section("Handwriting Section 2")
-    director.draw_lines(20)
+    d.add_section("Handwriting Section 2")
+    d.draw_lines(20)
+
+    d.new_page()
+
+    d.add_section("Checklist")
+    d.add_checkboxes(["Option one", "Option two", "Option three"])
 
     # Finalizing document
-    director.finalize_document()
+    d.finalize_document()
 
     # Saving the document to a .tex file
-    director.write_to_file('output.tex')
+    d.write_to_file('output.tex')
