@@ -21,8 +21,8 @@ class TextBuilder(Builder):
 class TextInputBuilder(Builder):
     def build_part(self, **kwargs):
         lines = kwargs.get('number_of_lines', 10)
-        spacing = kwargs.get('spacing', 3.0)  # Default changed to 3.0
-        spacing_mm = f"{spacing * 10}mm"  # Convert cm to mm
+        spacing = kwargs.get('spacing', 3.0)
+        spacing_mm = f"{spacing * 10}mm"
         return f"{{\\openup {kwargs.get('openup', '0.8cm')}\n\\lines{{{lines}}}{{{spacing_mm}}}\n}}\n"
 
 # Director Class
@@ -39,7 +39,7 @@ class Director:
     def setup_document(self):
         header = (
             "\\documentclass[12pt]{article}\n"
-            "\\usepackage[a4paper, total={6in, 8in}]{geometry}\n"
+            "\\usepackage[a4paper, total={4in, 6in}, margin=0.5in]{geometry}\n"
             "\\usepackage{forloop}\n"
             "\\newcounter{ct}\n"
             "\\newcommand{\\lines}[2]{% #1: number of lines, #2: spacing between lines\n"
