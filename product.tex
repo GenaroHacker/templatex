@@ -1,0 +1,32 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{forloop}
+
+\newcounter{ct}
+
+\begin{document}
+
+\section*{Computer Text Section 1}
+This section contains the first part of regular computer text.
+
+\section*{Handwriting Section 1}
+% Adjust line spacing for handwriting
+{\openup 0.8cm
+\noindent % Prevent indentation of lines
+\forloop{ct}{1}{\value{ct} < 15}{ % 15 lines in this section
+    \noindent\rule{\linewidth}{0.4pt} % Draw a horizontal line
+}}
+
+\section*{Computer Text Section 2}
+This section contains the second part of regular computer text.
+
+\section*{Handwriting Section 2}
+% Continue with adjusted line spacing
+{\openup 0.8cm
+\noindent % Prevent indentation of lines
+\forloop{ct}{1}{\value{ct} < 20}{ % 20 lines in this section
+    \noindent\rule{\linewidth}{0.4pt} % Draw a horizontal line
+}}
+
+\end{document}
+
